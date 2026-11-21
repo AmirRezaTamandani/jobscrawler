@@ -4,7 +4,8 @@
   "outputDirectory": "public",
   "functions": {
     "api/dashboard.py": { "includeFiles": "jobscrawler/**" },
-    "api/cron.py": { "includeFiles": "jobscrawler/**", "maxDuration": 300 }
+    "api/cron.py": { "includeFiles": "jobscrawler/**", "maxDuration": 300 },
+    "api/crawl.py": { "includeFiles": "{jobscrawler,api}/**", "maxDuration": 300 }
   },
   "crons": [
     { "path": "/api/cron", "schedule": "30 4 * * *" }

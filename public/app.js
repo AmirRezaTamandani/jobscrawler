@@ -17,6 +17,15 @@ let filtered = [];
 let selectedRole = "";
 let page = 1;
 let fetching = null;
+const selected = new Map();
+const jobKey = job => job.source + ":" + job.source_id;
+function loading(button, active, label) {
+  if (active) button.dataset.idleLabel = button.textContent;
+  button.disabled = active;
+  button.classList.toggle("is-loading", active);
+  button.setAttribute("aria-busy", String(active));
+  button.textContent = active ? label : button.dataset.idleLabel;
+}
 
 function formatDate(value, full = false) {
   if (!value) return "تاریخ نامشخص";
@@ -61,7 +70,17 @@ function normalize(value) {
 function newRow(job) {
   const row = document.createElement("tr");
   const vacancy = textElement("td", "vacancy");
-  vacancy.append(textElement("bdi", "job-title", job.title), textElement("bdi", "company", job.company || "شرکت اعلام نشده"));
+  const checkbox = document.createElement("input");
+  checkbox.type = "checkbox";
+  checkbox.checked = selected.has(jobKey(job));
+  checkbox.disabled = !sourceUrl(job);
+  checkbox.setAttribute("aria-label", "انتخاب «" + job.title + "»");
+  checkbox.addEventListener("change", () => {
+    if (checkbox.checked) selected.set(jobKey(job), job);
+    else selected.delete(jobKey(job));
+    renderSelected();
+  });
+  vacancy.append(checkbox, textElement("bdi", "job-title", job.title), textElement("bdi", "company", job.company || "شرکت اعلام نشده"));
   const chipCell = textElement("td", "chip-cell");
   const chips = textElement("div", "chips");
   for (const role of job.roles || []) {
@@ -90,6 +109,45 @@ function newRow(job) {
   row.append(vacancy, chipCell, place, source, action);
   return row;
 }
+
+function renderSelected() {
+  $("selected-count").textContent = digits.format(selected.size);
+  $("batch-copy").disabled = !selected.size;
+  $("batch-status").textContent = "";
+  const eligible = filtered.filter(job => sourceUrl(job));
+  const count = eligible.filter(job => selected.has(jobKey(job))).length;
+  $("select-all").disabled = !eligible.length;
+  $("select-all").checked = Boolean(eligible.length) && count === eligible.length;
+  $("select-all").indeterminate = count > 0 && count < eligible.length;
+  $("selection-status").textContent = digits.format(count) + " از " + digits.format(eligible.length) + " نتیجه انتخاب شده";
+  $("selected-list").replaceChildren(...Array.from(selected.values(), job => {
+    const item = document.createElement("li");
+    const name = textElement("span", "", job.title + " | " + (job.company || "") + " | " + sources[job.source]);
+    const remove = textElement("button", "", "حذف");
+    remove.type = "button";
+    remove.setAttribute("aria-label", "حذف «" + job.title + "» از فهرست");
+    remove.addEventListener("click", () => { selected.delete(jobKey(job)); renderSelected(); if (report) renderPage(); });
+    item.append(name, remove);
+    return item;
+  }));
+}
+$("select-all").addEventListener("change", event => {
+  for (const job of filtered) {
+    if (!sourceUrl(job)) continue;
+    if (event.target.checked) selected.set(jobKey(job), job);
+    else selected.delete(jobKey(job));
+  }
+  renderSelected();
+  renderPage();
+});
+$("batch-copy").addEventListener("click", async () => {
+  loading($("batch-copy"), true, "در حال کپی…");
+  const jobs = Array.from(selected.values(), job => ({source: job.source, source_id: job.source_id, title: job.title, company: job.company, url: sourceUrl(job)}));
+  const payload = JSON.stringify({version: 1, jobs});
+  try { await navigator.clipboard.writeText(payload); $("batch-status").textContent = "فهرست کپی شد. آن را در افزونه وارد کنید."; }
+  catch { $("batch-text").value = payload; $("batch-text").hidden = false; $("batch-text").select(); $("batch-status").textContent = "متن انتخاب‌شده را کپی کنید."; }
+  finally { loading($("batch-copy"), false); $("batch-copy").disabled = !selected.size; }
+});
 
 function showState(message, action, handler) {
   $("state").replaceChildren(textElement("p", "", message));
@@ -150,6 +208,8 @@ function renderPage() {
   $("page-label").textContent = "صفحهٔ " + digits.format(page) + " از " + digits.format(max);
   $("result-count").textContent = digits.format(filtered.length) + " نتیجه";
   $("copy").disabled = !filtered.some(job => sourceUrl(job));
+  $("download").disabled = !filtered.length;
+  renderSelected();
   if (!filtered.length) {
     if (report.jobs.length) showState("فرصتی با این جست‌وجو و فیلترها پیدا نشد.", "پاک کردن فیلترها", resetFilters);
     else if (Object.values(sources).length && Object.keys(sources).every(key => report.sources[key] !== null)) {
@@ -201,12 +261,16 @@ async function loadReport(day) {
   $("pagination").hidden = true;
   $("day").disabled = true;
   $("copy").disabled = true;
+  $("download").disabled = true;
+  renderSelected();
   $("notice").hidden = true;
   $("result-count").textContent = "";
   $("copy-status").textContent = "";
   $("copy-text").hidden = true;
   renderSummary();
   showState("در حال دریافت آگهی‌ها…");
+  $("state").classList.add("is-loading");
+  $("results").setAttribute("aria-busy", "true");
   try {
     const endpoint = new URL("/api/dashboard", location.origin);
     if (day) endpoint.searchParams.set("day", day);
@@ -228,6 +292,11 @@ async function loadReport(day) {
     $("day").disabled = !$("day").options.length || !$("day").options[0].value.match(/^\d{4}-/);
     if (day && err.message === "HTTP 404") showState("برای این تاریخ گزارشی در دسترس نیست.", "نمایش آخرین گزارش", () => showDay(null, true));
     else showState("دریافت گزارش انجام نشد. لطفاً دوباره تلاش کنید.", "تلاش دوباره", () => loadReport(day));
+  } finally {
+    if (request === fetching) {
+      $("state").classList.remove("is-loading");
+      $("results").setAttribute("aria-busy", "false");
+    }
   }
 }
 
@@ -247,6 +316,7 @@ $("prev").addEventListener("click", () => movePage(-1));
 $("next").addEventListener("click", () => movePage(1));
 $("copy").addEventListener("click", async () => {
   if (!report) return;
+  loading($("copy"), true, "در حال کپی…");
   const lines = filtered.flatMap(job => {
     const url = sourceUrl(job);
     return url ? [job.title + (job.company ? " | " + job.company : "") + "\n" + url] : [];
@@ -260,7 +330,79 @@ $("copy").addEventListener("click", async () => {
     $("copy-text").hidden = false;
     $("copy-text").select();
     $("copy-status").textContent = "متن انتخاب‌شده را کپی کنید.";
+  } finally {
+    loading($("copy"), false);
+    $("copy").disabled = !filtered.some(job => sourceUrl(job));
+  }
+});
+
+function csvCell(value) {
+  let text = String(value ?? "");
+  // Prevent spreadsheet software interpreting untrusted cell values as formulas.
+  if (/^[\s\u0000-\u001f]*[=+@\-\t\r]/u.test(text)) text = "'" + text;
+  return '"' + text.replace(/"/g, '""') + '"';
+}
+
+$("download").addEventListener("click", async () => {
+  if (!report || !filtered.length) return;
+  loading($("download"), true, "در حال آماده‌سازی…");
+  await new Promise(resolve => requestAnimationFrame(() => setTimeout(resolve, 0)));
+  try {
+  const rows = [["عنوان", "شرکت", "موقعیت", "حوزه", "منبع", "تاریخ درج", "تاریخ اولین مشاهده", "لینک"]];
+  for (const job of filtered) {
+    rows.push([job.title, job.company, job.location,
+      (job.roles || []).map(role => roles[role] || role).join("، "),
+      sources[job.source] || job.source, job.posted_at, job.first_seen, sourceUrl(job)]);
+  }
+  const csv = "\ufeff" + rows.map(row => row.map(csvCell).join(",")).join("\r\n");
+  const href = URL.createObjectURL(new Blob([csv], {type: "text/csv;charset=utf-8"}));
+  const link = document.createElement("a");
+  link.href = href;
+  link.download = "felowin-jobs-" + report.day + ".csv";
+  link.click();
+  setTimeout(() => URL.revokeObjectURL(href), 1000);
+  } finally {
+    loading($("download"), false);
+    $("download").disabled = !filtered.length;
+  }
+});
+
+$("crawl-form").addEventListener("submit", async event => {
+  event.preventDefault();
+  const secret = $("crawl-secret").value;
+  if (!secret) return;
+  $("crawl-secret").value = "";
+  loading($("crawl-start"), true, "در حال دریافت…");
+  $("crawl-status").textContent = "دریافت آگهی‌ها در حال انجام است. این مرحله ممکن است چند دقیقه طول بکشد.";
+  try {
+    const response = await fetch("/api/crawl", {
+      method: "POST", headers: {Authorization: "Bearer " + secret, Accept: "application/json"},
+    });
+    const data = await response.json().catch(() => ({}));
+    if (response.status === 401) throw new Error("کلید دسترسی معتبر نیست.");
+    if (response.status === 503) throw new Error("ذخیره‌سازی یا تنظیمات سرور آماده نیست.");
+    if (!response.ok && response.status !== 502) throw new Error("اجرای کراولر با خطا مواجه شد.");
+    if (data.status === "complete") $("crawl-status").textContent = "دریافت آگهی‌ها کامل شد.";
+    else if (data.status === "partial") $("crawl-status").textContent = "دریافت کامل نشد. وضعیت منابع را در گزارش بررسی کنید.";
+    else if (data.status === "failed") $("crawl-status").textContent = "دریافت از منابع ناموفق بود. وضعیت منابع را در گزارش بررسی کنید.";
+    else throw new Error("پاسخ سرور قابل بررسی نیست.");
+    showDay(data.day || null, true);
+  } catch (error) {
+    $("crawl-status").textContent = error instanceof TypeError
+      ? "ارتباط با سرور قطع شد. پیش از اجرای مجدد، گزارش و وضعیت منابع را بررسی کنید."
+      : error.message;
+  } finally {
+    loading($("crawl-start"), false);
   }
 });
 
 loadReport(new URL(location.href).searchParams.get("day"));
+
+window.addEventListener("felowin-session-status", event => {
+  const detail = event.detail;
+  if (!detail || !["logged_in", "logged_out", "unknown"].includes(detail.jobinja) || !["logged_in", "logged_out", "unknown"].includes(detail.jobvision)) return;
+  const labels = {logged_in: "وارد شده", logged_out: "وارد نشده", unknown: "نامشخص"};
+  const checked = new Date(detail.checkedAt);
+  if (Number.isNaN(checked.valueOf())) return;
+  $("session-status").textContent = "آخرین بررسی " + checked.toLocaleTimeString("fa-IR") + " — جابینجا: " + labels[detail.jobinja] + "، جاب‌ویژن: " + labels[detail.jobvision];
+});

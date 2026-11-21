@@ -8,6 +8,7 @@ from socketserver import ThreadingMixIn
 from wsgiref.simple_server import WSGIServer, make_server
 
 from api.cron import app as cron
+from api.crawl import app as crawl
 from api.dashboard import app as dashboard
 from .web import json_response
 
@@ -21,6 +22,8 @@ def app(environ, start_response):
         return dashboard(environ, start_response)
     if path == "/api/cron":
         return cron(environ, start_response)
+    if path == "/api/crawl":
+        return crawl(environ, start_response)
     if environ.get("REQUEST_METHOD") not in {"GET", "HEAD"}:
         return json_response(start_response, HTTPStatus.METHOD_NOT_ALLOWED, {"error": "GET required."})
     asset = (PUBLIC / ("index.html" if path == "/" else path.lstrip("/"))).resolve()

@@ -33,6 +33,11 @@
   </div>
 </header>
 <main class="wrap">
+  <nav class="portal-access" aria-label="ورود به سایت‌های کاریابی">
+    <span>ورود به حساب کاریابی</span>
+    <a href="https://jobvision.ir/login" target="_blank" rel="noopener noreferrer">جاب‌ویژن <span class="portal-tab">(برگه جدید)</span></a>
+    <a href="https://jobinja.ir/login/user" target="_blank" rel="noopener noreferrer">جابینجا <span class="portal-tab">(برگه جدید)</span></a>
+  <span id="session-status" role="status">وضعیت ورود جابینجا و جاب‌ویژن مشخص نیست. در افزونه بررسی کنید.</span></nav>
   <section class="masthead" aria-labelledby="hero-title">
     <div class="mast-text">
       <div class="report-meta"><span class="report-label"><svg class="ico"><use href="#i-pulse"/></svg>گزارش روزانه</span><span class="meta-line"></span><time id="report-date">—</time></div>
@@ -55,15 +60,26 @@
       </div>
     </div>
   </section>
+  <section class="crawl-panel" aria-labelledby="crawl-title">
+    <div><h2 id="crawl-title">دریافت آگهی‌های تازه</h2><p>برای اجرای کراولر، کلید دسترسی تنظیم‌شده در سرور را وارد کنید.</p></div>
+    <form id="crawl-form" class="crawl-form">
+      <label for="crawl-secret">کلید دسترسی</label>
+      <input id="crawl-secret" type="password" autocomplete="off" required>
+      <button type="submit" id="crawl-start">شروع دریافت</button>
+    </form>
+    <p id="crawl-status" class="crawl-status" role="status" aria-live="polite"></p>
+  </section>
   <div class="notice info" id="notice" role="status" hidden></div>
   <section id="results" class="results" aria-labelledby="list-heading">
-    <div class="section-heading"><div class="heading-group"><span class="heading-icon"><svg class="ico"><use href="#i-briefcase"/></svg></span><h2 id="list-heading">فهرست فرصت‌ها</h2></div><button type="button" id="copy" class="copy" disabled><svg class="ico"><use href="#i-copy"/></svg>کپی فهرست</button></div>
+    <div class="section-heading"><div class="heading-group"><span class="heading-icon"><svg class="ico"><use href="#i-briefcase"/></svg></span><h2 id="list-heading">فهرست فرصت‌ها</h2></div><div class="result-actions"><button type="button" id="download" class="copy" disabled>دانلود نتایج CSV</button><button type="button" id="copy" class="copy" disabled><svg class="ico"><use href="#i-copy"/></svg>کپی فهرست</button></div></div>
+    <details class="batch"><summary>آگهی‌های انتخاب‌شده <span id="selected-count">۰</span></summary><p>فهرست را بررسی و برای ارسال در افزونه کپی کنید. افزونه درخواست‌ها را در دسته‌های ۱۰۰تایی پردازش می‌کند.</p><div class="batch-actions"><button type="button" id="batch-copy" disabled>کپی برای افزونه</button><p id="batch-status" role="status"></p></div><textarea id="batch-text" aria-label="فهرست برای کپی دستی" readonly hidden></textarea><ul id="selected-list"></ul></details>
     <div class="desk">
       <div class="tools">
         <label class="search"><svg class="ico"><use href="#i-search"/></svg><input id="query" type="search" aria-label="جست‌وجو در عنوان، شرکت یا شهر" placeholder="جست‌وجو در عنوان، شرکت یا شهر…" autocomplete="off"></label>
         <label class="select-box source"><svg class="ico"><use href="#i-source"/></svg><select id="source" aria-label="منبع آگهی"><option value="">همهٔ منابع</option><option value="jobinja">جابینجا</option><option value="jobvision">جاب‌ویژن</option></select><svg class="ico chevron"><use href="#i-chevron"/></svg></label>
       </div>
       <div class="filter-row"><div class="role-filters" aria-label="فیلتر حوزه"><button type="button" data-role="" aria-pressed="true">همهٔ حوزه‌ها</button><button type="button" data-role="performance" aria-pressed="false"><span class="dot performance"></span>پرفورمنس</button><button type="button" data-role="seo" aria-pressed="false"><span class="dot seo"></span>سئو</button><button type="button" data-role="social" aria-pressed="false"><span class="dot social"></span>شبکه‌های اجتماعی</button></div><span id="result-count" class="result-count" role="status"></span></div>
+      <div class="select-all-row"><label><input type="checkbox" id="select-all" disabled> انتخاب همهٔ نتایج فیلترشده در تمام صفحه‌ها</label><span id="selection-status" role="status"></span></div>
       <div id="state" class="state" role="status"><p>در حال دریافت آگهی‌ها…</p></div>
       <table id="list" hidden><thead><tr><th scope="col">عنوان شغلی و شرکت</th><th scope="col">حوزه</th><th scope="col">موقعیت</th><th scope="col">منبع و تاریخ درج</th><th scope="col"><span class="sr-only">لینک اصلی</span></th></tr></thead><tbody id="rows"></tbody></table>
       <nav id="pagination" class="pagination" aria-label="صفحه‌بندی فرصت‌ها" hidden><span id="range"></span><div><button id="prev" type="button" aria-label="صفحهٔ قبل"><svg class="ico"><use href="#i-right"/></svg></button><span id="page-label"></span><button id="next" type="button" aria-label="صفحهٔ بعد"><svg class="ico"><use href="#i-left"/></svg></button></div></nav>
