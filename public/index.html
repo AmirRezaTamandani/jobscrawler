@@ -1,0 +1,76 @@
+<!doctype html>
+<html dir="rtl" lang="fa">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#231d44">
+  <title>رادار فرصت‌های شغلی | فلووین</title>
+  <link rel="icon" href="/assets/felowin-mark.svg" type="image/svg+xml">
+  <link rel="preload" as="font" type="font/woff2" href="/assets/Vazirmatn.woff2" crossorigin>
+  <link rel="stylesheet" href="/styles.css">
+  <script type="module" src="/app.js"></script>
+</head>
+<body>
+<svg class="symbols" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.8"/><rect x="14" y="3" width="7" height="7" rx="1.8"/><rect x="3" y="14" width="7" height="7" rx="1.8"/><rect x="14" y="14" width="7" height="7" rx="1.8"/></symbol>
+  <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="2.7"/><path d="M7.5 3v4m9-4v4M3.5 10h17m-12 4h2m3 0h2"/></symbol>
+  <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m7 10 5 5 5-5"/></symbol>
+  <symbol id="i-pulse" viewBox="0 0 24 24"><path d="M2 12h5l3-8 4 16 3-8h5"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.8"/><path d="m16 16 4.5 4.5"/></symbol>
+  <symbol id="i-source" viewBox="0 0 24 24"><path d="m12 3 9 5-9 5-9-5 9-5ZM3 12l9 5 9-5M3 16l9 5 9-5"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="13" rx="2.5"/><path d="M15.5 8V5.5A2.5 2.5 0 0 0 13 3H5.5A2.5 2.5 0 0 0 3 5.5V14a2.5 2.5 0 0 0 2.5 2.5H8"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24"><path d="M19 10c0 5-7 11-7 11S5 15 5 10a7 7 0 1 1 14 0Z"/><circle cx="12" cy="10" r="2.3"/></symbol>
+  <symbol id="i-external" viewBox="0 0 24 24"><path d="M14 4h6v6m0-6-9 9m0-8H6a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-5"/></symbol>
+  <symbol id="i-briefcase" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="14" rx="2.5"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 12c5 3 13 3 18 0M10 13.5v2h4v-2"/></symbol>
+  <symbol id="i-left" viewBox="0 0 24 24"><path d="m14 6-6 6 6 6"/></symbol>
+  <symbol id="i-right" viewBox="0 0 24 24"><path d="m10 6 6 6-6 6"/></symbol>
+</svg>
+<a href="#results" class="skip-link">رفتن به فهرست فرصت‌ها</a>
+<header class="topbar">
+  <div class="wrap bar-inner">
+    <div class="brand-group"><a href="/" aria-label="فلووین، آخرین گزارش"><img src="/assets/felowin-logo.svg" alt="فلووین" width="120" height="26"></a><span class="divider"></span><span class="workspace"><svg class="ico"><use href="#i-grid"/></svg>میز کار</span></div>
+    <label class="select-box archive"><svg class="ico"><use href="#i-calendar"/></svg><span class="archive-caption">آرشیو گزارش‌ها</span><select id="day" aria-label="انتخاب تاریخ گزارش" disabled><option>آرشیو گزارش‌ها</option></select><svg class="ico chevron"><use href="#i-chevron"/></svg></label>
+  </div>
+</header>
+<main class="wrap">
+  <section class="masthead" aria-labelledby="hero-title">
+    <div class="mast-text">
+      <div class="report-meta"><span class="report-label"><svg class="ico"><use href="#i-pulse"/></svg>گزارش روزانه</span><span class="meta-line"></span><time id="report-date">—</time></div>
+      <h1 id="hero-title">رادار فرصت‌های شغلی</h1>
+      <p>فرصت‌های بازاریابی دیجیتال که در این روز برای اولین بار پیدا شده‌اند.</p>
+    </div>
+    <div class="summary" aria-label="تعداد آگهی‌ها به تفکیک حوزه">
+      <div class="summary-key">
+        <div><span class="dot performance"></span><span>پرفورمنس</span><strong id="total-performance">—</strong></div>
+        <div><span class="dot seo"></span><span>سئو</span><strong id="total-seo">—</strong></div>
+        <div><span class="dot social"></span><span>شبکه‌های اجتماعی</span><strong id="total-social">—</strong></div>
+      </div>
+      <div class="dial">
+        <svg viewBox="0 0 160 160" aria-hidden="true">
+          <circle class="dial-rim" cx="80" cy="80" r="75.5" /><circle class="dial-track" cx="80" cy="80" r="65"/>
+          <g transform="rotate(-90 80 80)" fill="none" stroke-width="9"><circle pathLength="100" cx="80" cy="80" r="65" class="arc performance" id="arc-performance"/><circle pathLength="100" cx="80" cy="80" r="65" class="arc seo" id="arc-seo"/><circle pathLength="100" cx="80" cy="80" r="65" class="arc social" id="arc-social"/></g>
+          <circle class="dial-inner" cx="80" cy="80" r="54"/>
+        </svg>
+        <div class="dial-value"><strong id="total">—</strong><span>کل فرصت‌ها</span></div>
+      </div>
+    </div>
+  </section>
+  <div class="notice info" id="notice" role="status" hidden></div>
+  <section id="results" class="results" aria-labelledby="list-heading">
+    <div class="section-heading"><div class="heading-group"><span class="heading-icon"><svg class="ico"><use href="#i-briefcase"/></svg></span><h2 id="list-heading">فهرست فرصت‌ها</h2></div><button type="button" id="copy" class="copy" disabled><svg class="ico"><use href="#i-copy"/></svg>کپی فهرست</button></div>
+    <div class="desk">
+      <div class="tools">
+        <label class="search"><svg class="ico"><use href="#i-search"/></svg><input id="query" type="search" aria-label="جست‌وجو در عنوان، شرکت یا شهر" placeholder="جست‌وجو در عنوان، شرکت یا شهر…" autocomplete="off"></label>
+        <label class="select-box source"><svg class="ico"><use href="#i-source"/></svg><select id="source" aria-label="منبع آگهی"><option value="">همهٔ منابع</option><option value="jobinja">جابینجا</option><option value="jobvision">جاب‌ویژن</option></select><svg class="ico chevron"><use href="#i-chevron"/></svg></label>
+      </div>
+      <div class="filter-row"><div class="role-filters" aria-label="فیلتر حوزه"><button type="button" data-role="" aria-pressed="true">همهٔ حوزه‌ها</button><button type="button" data-role="performance" aria-pressed="false"><span class="dot performance"></span>پرفورمنس</button><button type="button" data-role="seo" aria-pressed="false"><span class="dot seo"></span>سئو</button><button type="button" data-role="social" aria-pressed="false"><span class="dot social"></span>شبکه‌های اجتماعی</button></div><span id="result-count" class="result-count" role="status"></span></div>
+      <div id="state" class="state" role="status"><p>در حال دریافت آگهی‌ها…</p></div>
+      <table id="list" hidden><thead><tr><th scope="col">عنوان شغلی و شرکت</th><th scope="col">حوزه</th><th scope="col">موقعیت</th><th scope="col">منبع و تاریخ درج</th><th scope="col"><span class="sr-only">لینک اصلی</span></th></tr></thead><tbody id="rows"></tbody></table>
+      <nav id="pagination" class="pagination" aria-label="صفحه‌بندی فرصت‌ها" hidden><span id="range"></span><div><button id="prev" type="button" aria-label="صفحهٔ قبل"><svg class="ico"><use href="#i-right"/></svg></button><span id="page-label"></span><button id="next" type="button" aria-label="صفحهٔ بعد"><svg class="ico"><use href="#i-left"/></svg></button></div></nav>
+    </div>
+    <p id="copy-status" class="copy-status" role="status"></p><textarea id="copy-text" rows="5" aria-label="متن فهرست برای کپی دستی" readonly hidden></textarea>
+  </section>
+</main>
+<noscript><p>برای مشاهدهٔ فهرست آگهی‌ها، جاوااسکریپت را فعال کنید.</p></noscript>
+</body>
+</html>

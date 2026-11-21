@@ -1,0 +1,7 @@
+__pycache__/
+*.py[cod]
+/data/
+/reports/
+.env*
+.venv/
+.vercel/
